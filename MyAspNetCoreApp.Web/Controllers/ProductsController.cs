@@ -5,26 +5,25 @@ namespace MyAspNetCoreApp.Web.Controllers
 {
     public class ProductsController : Controller
     {
-
+        private AppDbContext _context;
         private readonly ProductRepository _productRepository;
-        public ProductsController()
+        public ProductsController(AppDbContext context)
         {
-            _productRepository =new  ProductRepository();
-
-          
-
+            _productRepository = new ProductRepository();
+            _context = context;
         }
         public IActionResult Index()
         {
-            var products = _productRepository.GetAll();
+            var products = _context.Products.ToList();
 
             return View(products);
         }
 
         public IActionResult Remove(int id)
         {
-
-            _productRepository.Remove(id);
+            var product = _context.Products.Find(id);
+            _context.Products.Remove(product);
+            _context.SaveChanges();
             return RedirectToAction("Index");
 
         }
@@ -34,11 +33,35 @@ namespace MyAspNetCoreApp.Web.Controllers
 
             return View();
         }
+        [HttpPost]
+        public IActionResult Add(Product newProduct)
+        {
+            //var name = HttpContext.Request.Form["Name"].ToString();
+            //var price = decimal.Parse(HttpContext.Request.Form["Price"].ToString());
+            //var stock = int.Parse(HttpContext.Request.Form["Stock"].ToString());
+            //var color = HttpContext.Request.Form["Color"].ToString();
+
+            //Product newProduct = new Product() { Name = Name, Price = Price, Stock = Stock, Color = Color };
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
+            TempData["status"] = "Ürün Başarıyla Eklendi";
+            return RedirectToAction("Index");
+        }
 
         public IActionResult Update(int id)
         {
+            var product = _context.Products.Find(id);
+            return View(product);
+        }
+        [HttpPost]
+        public IActionResult Update(Product updateProduct,int productId)
+        {
+            updateProduct.Id = productId;
+            _context.Products.Update(updateProduct);
+            _context.SaveChanges();
+            TempData["status"] = "Ürün Başarıyla Güncellendi";
+            return RedirectToAction("Index");
 
-            return View();
         }
     }
 }
