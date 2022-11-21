@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyAspNetCoreApp.Web.Helpers;
 using MyAspNetCoreApp.Web.Models;
 
 namespace MyAspNetCoreApp.Web.Controllers
@@ -6,14 +7,20 @@ namespace MyAspNetCoreApp.Web.Controllers
     public class ProductsController : Controller
     {
         private AppDbContext _context;
+        private IHelper _helper;
         private readonly ProductRepository _productRepository;
-        public ProductsController(AppDbContext context)
+        public ProductsController(AppDbContext context, IHelper helper)
         {
             _productRepository = new ProductRepository();
             _context = context;
+            _helper = helper;
         }
-        public IActionResult Index()
+        public IActionResult Index([FromServices]IHelper helper2)
         {
+            var text = "Asp.Net";
+            var upperText = _helper.Upper(text);
+            var status = _helper.Equals(helper2);
+
             var products = _context.Products.ToList();
 
             return View(products);

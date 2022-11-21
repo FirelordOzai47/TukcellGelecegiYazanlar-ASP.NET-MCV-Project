@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MyAspNetCoreApp.Web.Helpers;
 using MyAspNetCoreApp.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 
+builder.Services.AddTransient<IHelper,Helper>();
 
 
 var app = builder.Build();
